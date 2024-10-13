@@ -63,7 +63,9 @@ const AddFriendDialog = () => {
       })
       .catch((error) => {
         toast.error(
-          error instanceof ConvexError ? error.data : "Unexpected error occured!"
+          error instanceof ConvexError
+            ? error.data
+            : "Unexpected error occured!"
         );
       });
   };
