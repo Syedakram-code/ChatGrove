@@ -13,7 +13,7 @@ export const create = mutation({
       throw new ConvexError("Unautherized User");
     }
 
-    if(args.email == identity.email){
+    if(args.email === identity.email){
       throw new ConvexError("You can't send request to yourself!");
     }
 
@@ -55,6 +55,24 @@ export const create = mutation({
 
     if (requestAlreadyReceived) {
       throw new ConvexError("This user has already sent you an request!");
+    }
+
+    const friend1 = await ctx.db.query("friends").withIndex("by_user2", (q) =>
+      q.eq("user2", currentUser._id)
+    ).collect();
+
+    const friend2 = await ctx.db.query("friends").withIndex("by_user1", (q) =>
+      q.eq("user1", currentUser._id)
+    ).collect();
+
+    if(
+      friend1.some((friend) => {
+        friend.user2 === currentUser._id 
+      }) || friend2.some((friend) => {
+        friend.user1 === currentUser._id 
+      })
+    ){
+      throw new ConvexError("You are already friend with this user!");
     }
 
     const request = await ctx.db.insert("requests", {
@@ -99,3 +117,5 @@ export const deny = mutation({
 
   
 });
+
+

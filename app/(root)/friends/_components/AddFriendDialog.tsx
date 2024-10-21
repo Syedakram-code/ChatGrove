@@ -43,7 +43,7 @@ const addFriendFormSchema = z.object({
 
 const AddFriendDialog = () => {
   const { mutate: createRequest, pending } = useMutationState(
-    api.request.create
+    api.request.create,
   );
 
   const form = useForm<z.infer<typeof addFriendFormSchema>>({
@@ -57,11 +57,14 @@ const AddFriendDialog = () => {
     await createRequest({
       email: values.email,
     })
-      .then(() => {
+      .then((data) => {
+        console.log(data);
+        
         form.reset();
         toast.success("Friend request sent successfully!");
       })
       .catch((error) => {
+        console.log(error)
         toast.error(
           error instanceof ConvexError
             ? error.data
